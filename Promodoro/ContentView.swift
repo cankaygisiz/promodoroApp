@@ -47,6 +47,12 @@ struct HeaderView: View {
     
     var body: some View {
         HStack {
+            Image("Logo")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 32, height: 32)
+                .clipShape(RoundedRectangle(cornerRadius: 6))
+            
             Text("Promodoro")
                 .font(.title2)
                 .fontWeight(.bold)
