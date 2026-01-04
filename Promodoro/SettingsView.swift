@@ -8,6 +8,7 @@ struct SettingsView: View {
     @State private var shortBreakMinutes: Double = 5
     @State private var longBreakMinutes: Double = 15
     @State private var pomodorosCount: Double = 4
+    @State private var autoStartBreaks: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -53,6 +54,13 @@ struct SettingsView: View {
                                 unit: "",
                                 color: AppTheme.orange
                             )
+                            
+                            Toggle(isOn: $autoStartBreaks) {
+                                Text("Auto-start breaks")
+                                    .font(.subheadline)
+                                    .foregroundColor(AppTheme.textPrimary)
+                            }
+                            .tint(AppTheme.cyan)
                         }
                         
                         // About Section
@@ -109,6 +117,7 @@ struct SettingsView: View {
         shortBreakMinutes = timerManager.shortBreakDuration / 60
         longBreakMinutes = timerManager.longBreakDuration / 60
         pomodorosCount = Double(timerManager.pomodorosUntilLongBreak)
+        autoStartBreaks = timerManager.autoStartBreaks
     }
     
     private func saveSettings() {
@@ -116,6 +125,7 @@ struct SettingsView: View {
         timerManager.shortBreakDuration = shortBreakMinutes * 60
         timerManager.longBreakDuration = longBreakMinutes * 60
         timerManager.pomodorosUntilLongBreak = Int(pomodorosCount)
+        timerManager.autoStartBreaks = autoStartBreaks
         timerManager.saveSettings()
         timerManager.reset()
     }

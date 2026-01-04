@@ -48,6 +48,7 @@ class TimerManager: ObservableObject {
     @Published var shortBreakDuration: TimeInterval = 5 * 60
     @Published var longBreakDuration: TimeInterval = 15 * 60
     @Published var pomodorosUntilLongBreak: Int = 4
+    @Published var autoStartBreaks: Bool = false
     
     private var timer: Timer?
     private var cancellables = Set<AnyCancellable>()
@@ -159,6 +160,11 @@ class TimerManager: ObservableObject {
         
         state = .idle
         resetTimer()
+        
+        // Auto-start next session if enabled
+        if autoStartBreaks {
+            start()
+        }
     }
     
     private func resetTimer() {
@@ -204,6 +210,7 @@ class TimerManager: ObservableObject {
         if let count = UserDefaults.standard.object(forKey: "pomodorosUntilLongBreak") as? Int {
             pomodorosUntilLongBreak = count
         }
+        autoStartBreaks = UserDefaults.standard.bool(forKey: "autoStartBreaks")
     }
     
     func saveSettings() {
@@ -211,5 +218,6 @@ class TimerManager: ObservableObject {
         UserDefaults.standard.set(shortBreakDuration, forKey: "shortBreakDuration")
         UserDefaults.standard.set(longBreakDuration, forKey: "longBreakDuration")
         UserDefaults.standard.set(pomodorosUntilLongBreak, forKey: "pomodorosUntilLongBreak")
+        UserDefaults.standard.set(autoStartBreaks, forKey: "autoStartBreaks")
     }
 }
