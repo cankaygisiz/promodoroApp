@@ -8,6 +8,7 @@ struct SettingsView: View {
     @State private var shortBreakMinutes: Double = 5
     @State private var longBreakMinutes: Double = 15
     @State private var pomodorosCount: Double = 4
+    @State private var totalSessions: Double = 1
     @State private var autoStartBreaks: Bool = false
     
     var body: some View {
@@ -53,6 +54,14 @@ struct SettingsView: View {
                                 range: 2...8,
                                 unit: "",
                                 color: AppTheme.orange
+                            )
+                            
+                            SettingsSlider(
+                                title: "Total sessions",
+                                value: $totalSessions,
+                                range: 1...10,
+                                unit: "",
+                                color: AppTheme.cyan
                             )
                             
                             Toggle(isOn: $autoStartBreaks) {
@@ -117,6 +126,7 @@ struct SettingsView: View {
         shortBreakMinutes = timerManager.shortBreakDuration / 60
         longBreakMinutes = timerManager.longBreakDuration / 60
         pomodorosCount = Double(timerManager.pomodorosUntilLongBreak)
+        totalSessions = Double(timerManager.totalSessions)
         autoStartBreaks = timerManager.autoStartBreaks
     }
     
@@ -125,6 +135,7 @@ struct SettingsView: View {
         timerManager.shortBreakDuration = shortBreakMinutes * 60
         timerManager.longBreakDuration = longBreakMinutes * 60
         timerManager.pomodorosUntilLongBreak = Int(pomodorosCount)
+        timerManager.totalSessions = Int(totalSessions)
         timerManager.autoStartBreaks = autoStartBreaks
         timerManager.saveSettings()
         timerManager.reset()

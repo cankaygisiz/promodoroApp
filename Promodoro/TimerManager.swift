@@ -42,12 +42,14 @@ class TimerManager: ObservableObject {
     @Published var state: TimerState = .idle
     @Published var timeRemaining: TimeInterval = 25 * 60
     @Published var completedPomodoros: Int = 0
+    @Published var completedSessions: Int = 0
     
     // Settings
     @Published var focusDuration: TimeInterval = 25 * 60
     @Published var shortBreakDuration: TimeInterval = 5 * 60
     @Published var longBreakDuration: TimeInterval = 15 * 60
     @Published var pomodorosUntilLongBreak: Int = 4
+    @Published var totalSessions: Int = 1
     @Published var autoStartBreaks: Bool = false
     
     private var timer: Timer?
@@ -118,6 +120,7 @@ class TimerManager: ObservableObject {
     
     func resetProgress() {
         completedPomodoros = 0
+        completedSessions = 0
     }
     
     private func tick() {
@@ -155,6 +158,21 @@ class TimerManager: ObservableObject {
                 mode = .shortBreak
             }
         } else {
+            // Check if long break just completed (one full session done)
+            if mode == .longBreak {
+                completedSessions += 1
+                completedPomodoros = 0
+                
+                // Check if all sessions are complete
+                if completedSessions >= totalSessions {
+                    // All sessions finished - stop completely
+                    completedSessions = 0
+                    mode = .focus
+                    state = .idle
+                    resetTimer()
+                    return
+                }
+            }
             mode = .focus
         }
         
@@ -210,6 +228,9 @@ class TimerManager: ObservableObject {
         if let count = UserDefaults.standard.object(forKey: "pomodorosUntilLongBreak") as? Int {
             pomodorosUntilLongBreak = count
         }
+        if let sessions = UserDefaults.standard.object(forKey: "totalSessions") as? Int {
+            totalSessions = sessions
+        }
         autoStartBreaks = UserDefaults.standard.bool(forKey: "autoStartBreaks")
     }
     
@@ -218,6 +239,7 @@ class TimerManager: ObservableObject {
         UserDefaults.standard.set(shortBreakDuration, forKey: "shortBreakDuration")
         UserDefaults.standard.set(longBreakDuration, forKey: "longBreakDuration")
         UserDefaults.standard.set(pomodorosUntilLongBreak, forKey: "pomodorosUntilLongBreak")
+        UserDefaults.standard.set(totalSessions, forKey: "totalSessions")
         UserDefaults.standard.set(autoStartBreaks, forKey: "autoStartBreaks")
     }
 }
